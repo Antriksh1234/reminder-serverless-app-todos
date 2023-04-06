@@ -7,9 +7,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - go mod download
       - GOOS=linux go build -o main main.go
       - zip -r function.zip main
   post_build:
     commands:
-      - aws lambda update-function-code --function-name <your-function-name> --zip-file fileb://function.zip
+      - aws lambda update-function-code --function-name reminder-serverless-app-todos --zip-file fileb://function.zip
       - echo Build completed on `date`
