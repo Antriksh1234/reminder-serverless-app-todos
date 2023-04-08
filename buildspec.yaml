@@ -3,14 +3,23 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      go: 1.20
+      golang: 1.20
+    commands:
+      - echo "Installing dependencies..."
+      - go mod download
+
   build:
     commands:
-      - echo Build started on `date`
-      - go mod download
-      - GOOS=linux go build -o main main.go
-      - zip -r function.zip main
+      - echo "Building the Go application..."
+      - go build -o main
+
   post_build:
     commands:
-      - aws lambda update-function-code --function-name reminder-serverless-app-todos --zip-file fileb://function.zip
-      - echo Build completed on `date`
+      - echo "Creating deployment package..."
+      - zip deployment.zip main
+      - echo "Updating Lambda function..."
+      - aws lambda update-function-code --function-name reminder-serverless-app-todos --zip-file fileb://deployment.zip
+
+artifacts:
+  files:
+    - deployment.zip
